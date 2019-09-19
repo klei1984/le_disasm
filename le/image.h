@@ -54,7 +54,7 @@ struct Image {
         if (ofs.is_open()) {
             for (size_t oi = 0; oi < objects.size(); ++oi) {
                 ofs.seekp(objects[oi].base_address());
-                ofs.write((const char *)objects[oi].get_data_at(objects[oi].base_address()), objects[oi].size() - 1);
+                ofs.write((const char *)objects[oi].get_data_at(objects[oi].base_address()), objects[oi].size());
             }
             ofs.close();
         }
