@@ -1,24 +1,36 @@
 #ifndef LE_DISASM_REGIONS_H_
 #define LE_DISASM_REGIONS_H_
 
+#include "flags_restorer.h"
 #include "le/image.h"
 #include "region.h"
 
 struct Regions {
     std::map<uint32_t, Region> regions;
     std::map<uint32_t, Type> labelTypes;
+    bool verbose_;
 
-    Regions(std::vector<ImageObject> &objects) {
+    Regions(std::vector<ImageObject> &objects, bool verbose) {
+        verbose_ = verbose;
         for (size_t n = 0; n < objects.size(); ++n) {
             ImageObject &obj = objects[n];
             Type type = obj.is_executable() ? UNKNOWN : DATA;
-            printAddress(std::cerr, obj.base_address(), "Creating Region(0x") << ", " << std::dec << obj.size() << ", "
-                                                                              << type << ")" << std::endl;
+            printAddress(std::cerr, obj.base_address(), "Creating Region (0x")
+                << ", " << std::dec << obj.size() << ", " << type << ")" << std::endl;
             regions[obj.base_address()] = Region(obj.base_address(), obj.size(), type, std::addressof(obj));
             if (type == DATA) {
                 labelTypes[obj.base_address()] = type;
             }  // else no automatic label for lowest .text address
         }
+    }
+
+    uint32_t get_label_type(uint32_t address, Type *label) {
+        const std::map<uint32_t, Type>::iterator item = labelTypes.find(address);
+        if (labelTypes.end() != item) {
+            *label = item->second;
+            return item->first;
+        }
+        return 0;
     }
 
     Region *regionContaining(uint32_t address) {
@@ -46,22 +58,22 @@ struct Regions {
         FlagsRestorer _(std::cerr);
         Region next(reg.end_address(), parent.end_address() - reg.end_address(), parent.type(),
                     parent.image_object_pointer());
-        std::cerr << parent << " split to ";
+        if (verbose_) std::cerr << parent << " split to ";
 
         if (reg.address() != parent.address()) {
             parent.size(reg.address() - parent.address());
             regions[reg.address()] = reg;
-            std::cerr << parent << ", " << reg;
+            if (verbose_) std::cerr << parent << ", " << reg;
         } else {
             parent = reg;
-            std::cerr << parent;
+            if (verbose_) std::cerr << parent;
         }
 
         if (next.size() > 0) {
             regions[reg.end_address()] = next;
-            std::cerr << ", " << next;
+            if (verbose_) std::cerr << ", " << next;
         }
-        std::cerr << std::endl;
+        if (verbose_) std::cerr << std::endl;
 
         assert(reg.image_object_pointer());
         assert(next.image_object_pointer());
@@ -92,7 +104,7 @@ private:
     Region *attemptMerge(Region *prev, Region *next) {
         if (prev != NULL and next != NULL and prev->type() == next->type() and
             prev->end_address() == next->address() and prev->bitness() == next->bitness()) {
-            std::cerr << "Combining " << *prev << " and " << *next << std::endl;
+            if (verbose_) std::cerr << "Combining " << *prev << " and " << *next << std::endl;
             prev->size(prev->size() + next->size());
             regions.erase(next->address());
             return prev;

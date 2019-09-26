@@ -28,6 +28,7 @@ public:
     uint32_t address() const { return address_; }
     size_t end_address() const { return (address_ + size_); }
     Type type() const { return type_; }
+    void type(Type type) { type_ = type; }
     bool contains_address(uint32_t address) const { return (address_ <= address and address < address_ + size_); }
     size_t size() const { return size_; }
     void size(size_t size) { size_ = size; }
@@ -35,29 +36,25 @@ public:
         assert(image_object_pointer_);
         return image_object_pointer_->bitness();
     }
-    const ImageObject *image_object_pointer() { return image_object_pointer_; }
+    const ImageObject *image_object_pointer() const { return image_object_pointer_; }
     void image_object_pointer(const ImageObject *image_object_pointer) { image_object_pointer_ = image_object_pointer; }
+    uint32_t alignment() const {
+        uint32_t align, mod, address;
+
+        assert(image_object_pointer_);
+        address = address_ - image_object_pointer_->base_address();
+
+        for (align = 1, mod = 0; mod == 0;) {
+            mod = address % (align * 2);
+            if (mod)
+                break;
+            else
+                align *= 2;
+        }
+        return align;
+    }
 };
 
-std::ostream &operator<<(std::ostream &os, Type type) {
-    switch (type) {
-        case UNKNOWN:
-            return os << "unknown";
-        case CODE:
-            return os << "code";
-        case DATA:
-            return os << "data";
-        case SWITCH:
-            return os << "switch";
-        default:
-            return os << "(unknown " << type << ")";
-    }
-}
-
-std::ostream &operator<<(std::ostream &os, const Region &reg) { /* %7s @ 0x%06x[%6d] */
-    FlagsRestorer _(os);
-    return printAddress(os << std::setw(7) << reg.type(), reg.address(), " @ 0x")
-           << "[" << std::setw(6) << std::setfill(' ') << std::dec << reg.size() << "]";
-}
+std::ostream &operator<<(std::ostream &os, const Region &reg);
 
 #endif /* LE_DISASM_REGION_H_ */

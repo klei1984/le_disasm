@@ -1,8 +1,6 @@
 #ifndef LE_DISASM_LE_IMAGE_H_
 #define LE_DISASM_LE_IMAGE_H_
 
-#include <map>
-
 #include "../error.h"
 #include "image_object.h"
 #include "lin_ex.h"
@@ -19,6 +17,16 @@ struct Image {
         }
         throw Error() << "BUG: address out of image range: 0x" << std::setfill('0') << std::setw(6) << std::hex
                       << std::noshowbase << address;
+    }
+
+    bool isValidAddress(const uint32_t address) {
+        for (size_t n = 0; n < objects.size(); ++n) {
+            const ImageObject &obj = objects[n];
+            if (obj.base_address() <= address and address < obj.base_address() + obj.size()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void loadObjectData(std::istream &is, LinearExecutable &lx, std::vector<uint8_t> &data, Header &hdr,
@@ -49,7 +57,7 @@ struct Image {
         }
     }
 
-    void outputFlatMemoryDump(char const *path) {
+    bool outputFlatMemoryDump(std::string &path) {
         std::ofstream ofs(path, std::ofstream::binary);
         if (ofs.is_open()) {
             for (size_t oi = 0; oi < objects.size(); ++oi) {
@@ -57,7 +65,9 @@ struct Image {
                 ofs.write((const char *)objects[oi].get_data_at(objects[oi].base_address()), objects[oi].size());
             }
             ofs.close();
+            return true;
         }
+        return false;
     }
 
     Image(std::istream &is, LinearExecutable &lx) {
