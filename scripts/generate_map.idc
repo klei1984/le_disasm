@@ -26,26 +26,36 @@ static TryLUT(Address) {
 	Flags = GetFlags(Address);
 	Bitness = get_segm_attr(Address, SEGATTR_BITNESS);
 
-	if (has_name(Flags) && has_xref(Flags) && is_lut_entry(Flags, Bitness)) {
+	if (has_any_name(Flags) && has_xref(Flags) && is_lut_entry(Flags, Bitness)) {
 		auto NextAddress;
 		auto ThisAddress;
 		auto NextFlags;
 		auto WordSize;
 		auto LutSize;
+		auto ArraySize;
 
-		// start of LUT is found, now search for further LUT entires
 		ThisAddress = Address;
 		WordSize = (Bitness == 0) ? 2 : 4;
-		LutSize = WordSize;
-		for (;;) {
-			if ((ThisAddress + WordSize) >= get_segm_end(Address)) break;
-			NextAddress = ThisAddress + WordSize;
-			NextFlags = GetFlags(NextAddress);
 
-			if (!has_name(Flags) && !has_xref(Flags) && is_lut_entry(Flags, Bitness)) {
-				ThisAddress = NextAddress;
-				LutSize = LutSize + WordSize;
-			} else break;
+		// check whether LUT is an array
+		EndAddress = next_head(Address, get_segm_end(Address));
+		ArraySize = EndAddress - Address;
+		if ((ArraySize > WordSize) && ((ArraySize % WordSize) == 0)) {
+			LutSize = ArraySize;
+		} else {
+			LutSize = WordSize;
+
+			// start of LUT is found, now search for further LUT entires
+			for (;;) {
+				if ((ThisAddress + WordSize) >= get_segm_end(Address)) break;
+				NextAddress = ThisAddress + WordSize;
+				NextFlags = GetFlags(NextAddress);
+
+				if (!has_any_name(NextFlags) && !has_xref(NextFlags) && is_lut_entry(NextFlags, Bitness)) {
+					ThisAddress = NextAddress;
+					LutSize = LutSize + WordSize;
+				} else break;
+			}
 		}
 
 		return LutSize;
@@ -116,7 +126,9 @@ static ProcessFunction(Address, Handle) {
 	EndAddress = get_fchunk_attr(Address, FUNCATTR_END);
 	Size = EndAddress - StartAddress;
 
-	fprintf(Handle, "%s %s %08X %08X\n", Name, Class, Address, Size);
+	if (StartAddress == first_func_chunk(Address)) {
+		fprintf(Handle, "%s %s %08X %08X\n", Name, Class, Address, Size);
+	}
 
 	return EndAddress;
 }

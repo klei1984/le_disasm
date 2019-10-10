@@ -49,12 +49,10 @@ std::ostream &Emitter::print_typed_address(std::ostream &os, uint32_t address, T
 }
 
 std::ostream &Emitter::print_label(uint32_t address, Type type, char const *prefix) {
-    for (int indent = get_indent(type); indent-- > 0; std::cout << '\t')
+    for (int indent = get_indent(type); indent-- > 0; std::cout << '\t') {
         ;
+    }
     print_typed_address(std::cout << prefix, address, type) << ":";
-    //	TODO: if (!lab->get_name().empty()) {
-    //		std::cout << "\t/* " << lab->get_address() << " */";
-    //	}
     return std::cout;
 }
 
@@ -344,7 +342,7 @@ void Emitter::print_instruction(Insn &inst) {
     } else if (str == "lea    0x000000(%eax,%eiz,1),%eax") {
         str = "lea    0x000000(%eax),%eax";
     } else if (str == "lea    0x000000(%edx,%eiz,1),%edx") {
-        str = "lea    0x000000(%edx),%edx";  // https://www.technovelty.org/arch/the-quickest-way-to-do-nothing.html
+        str = "lea    0x000000(%edx),%edx";
     }
     std::cout << "\t\t" << str;
 
@@ -395,8 +393,7 @@ void Emitter::print_data_type_region(const Region &reg) {
             complete_string_quoting(bytes_in_line);
             std::cout << std::endl;
 
-            print_label(addr, DATA) << std::endl; /*<< stringNameFromValue(FIXME: too late to do it here,
-                                                    print_typed_address() needs to do the same) */
+            print_label(addr, DATA) << std::endl;
         }
         size_t len = get_len(reg, obj, fups, itr, addr);
         print_data_after_fixup(obj, addr, len, bytes_in_line);
@@ -429,7 +426,7 @@ void Emitter::print_switch_type_region(const Region &reg) {
                     }
                     print_typed_address(std::cout << "\t\t.long   ", func_addr, labelTypes[func_addr]) << std::endl;
                 } else {
-                    std::cout << "\t\t.long   " << std::hex << func_addr << std::endl;
+                    std::cout << "\t\t.long   0x" << std::hex << func_addr << std::endl;
                 }
                 addr += sizeof(uint32_t);
             } break;
@@ -443,7 +440,7 @@ void Emitter::print_switch_type_region(const Region &reg) {
                     }
                     print_typed_address(std::cout << "\t\t.short   ", func_addr, labelTypes[func_addr]) << std::endl;
                 } else {
-                    std::cout << "\t\t.short   " << std::hex << func_addr << std::endl;
+                    std::cout << "\t\t.short   0x" << std::hex << func_addr << std::endl;
                 }
                 addr += sizeof(uint16_t);
             } break;
@@ -522,6 +519,8 @@ void Emitter::print_code() {
     Type section = CODE;
 
     std::cerr << "Region count: " << regions.regions.size() << std::endl;
+
+    print_eip();
 
     for (std::map<uint32_t, Region>::const_iterator itr = regions.regions.begin(); itr != regions.regions.end();
          ++itr) {
