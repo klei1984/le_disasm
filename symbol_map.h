@@ -101,6 +101,8 @@ struct SymbolMap {
                             map[address] = Properties(address, size, name, DATA);
                         } else if (type.find("ASCII") != std::string::npos) {
                             map[address] = Properties(address, size, name, DATA);
+                        } else if (type.find("JUMP") != std::string::npos) {
+                            map[address] = Properties(address, size, name, JUMP);
                         }
                     }
                 }

@@ -303,7 +303,7 @@ struct Analyzer {
         if (verbose) std::cerr << std::dec << guess_count << " guess(es) to investigate" << std::endl;
     }
 
-    void process_map(SymbolMap *map) {
+    void process_map(SymbolMap *map, LinearExecutable &lx) {
         for (std::map<uint32_t, SymbolMap::Properties>::iterator it = map->map.begin(); it != map->map.end(); ++it) {
             const SymbolMap::Properties &item = it->second;
             const Region *const reg = regions.regionContaining(item.address);
@@ -392,6 +392,10 @@ struct Analyzer {
                     std::cerr << "Warning: Map file object at address 0x" << std::hex << item.address
                               << " does not fit into containing region." << std::endl;
                 regions.splitInsert((Region &)*reg, Region(item.address, size, DATA));
+            } else if (item.type == JUMP) {
+                if (lx.fixup_addresses.find(item.address) != lx.fixup_addresses.end()) {
+                    regions.labelTypes[item.address] = JUMP;
+                }
             }
         }
         trace_code();
@@ -408,10 +412,10 @@ struct Analyzer {
                         DEFINE_PATTERN_TABLE_ENTRY("\x8d\x80\x00\x00\x00\x00", "leal 0x00000000(%eax), %eax"),
                         DEFINE_PATTERN_TABLE_ENTRY("\x8d\x54\x22\x00", "leal 0x00(%edx), %edx"),
                         DEFINE_PATTERN_TABLE_ENTRY("\x8d\x44\x20\x00", "leal (%eax), %eax"),
-						DEFINE_PATTERN_TABLE_ENTRY("\x8d\x52\x00", "leal (%edx), %edx"),
-						DEFINE_PATTERN_TABLE_ENTRY("\x8d\x40\x00", "leal (%eax), %eax"),
-						DEFINE_PATTERN_TABLE_ENTRY("\x8B\xDB", "mov	%ebx, %ebx"),
-						DEFINE_PATTERN_TABLE_ENTRY("\x8B\xD2", "mov	%edx, %edx"),
+                        DEFINE_PATTERN_TABLE_ENTRY("\x8d\x52\x00", "leal (%edx), %edx"),
+                        DEFINE_PATTERN_TABLE_ENTRY("\x8d\x40\x00", "leal (%eax), %eax"),
+                        DEFINE_PATTERN_TABLE_ENTRY("\x8B\xDB", "mov	%ebx, %ebx"),
+                        DEFINE_PATTERN_TABLE_ENTRY("\x8B\xD2", "mov	%edx, %edx"),
                         DEFINE_PATTERN_TABLE_ENTRY("\x8B\xC9", "mov	%ecx, %ecx"),
                         DEFINE_PATTERN_TABLE_ENTRY("\x8B\xC0", "mov %eax, %eax"),
                         DEFINE_PATTERN_TABLE_ENTRY("\x87\xDB", "xchg %ebx, %ebx"),
@@ -467,7 +471,7 @@ public:
 
         if (map) {
             std::cerr << "Loading map file..." << std::endl;
-            process_map(map);
+            process_map(map, lx);
         }
 
         std::cerr << "Tracing text relocs for switches..." << std::endl;
