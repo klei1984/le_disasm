@@ -508,7 +508,12 @@ void Emitter::print_changed_section_type(const Region &reg, const Region *const 
         }
     } else {
         if (section != CODE) {
-            std::cout << std::endl << sections[section = CODE] << std::endl;
+            if (!reg.is_executable()) {
+                section = DATA;
+            } else {
+                section = CODE;
+            }
+            std::cout << std::endl << sections[section] << std::endl;
         }
     }
 }

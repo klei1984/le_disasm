@@ -36,6 +36,10 @@ public:
         assert(image_object_pointer_);
         return image_object_pointer_->bitness();
     }
+    bool is_executable() const {
+        assert(image_object_pointer_);
+        return image_object_pointer_->is_executable();
+    }
     const ImageObject *image_object_pointer() const { return image_object_pointer_; }
     void image_object_pointer(const ImageObject *image_object_pointer) { image_object_pointer_ = image_object_pointer; }
     uint32_t alignment() const {
