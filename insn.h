@@ -78,8 +78,8 @@ public:
             type = CALL;
         } else if (data0 == 0xe9) { /* jmp near */
             type = JUMP;
-        } else if (data0 == 0x67 and data1 == 0xe3) { /* 0x67 jmp short */
-            type = JUMP;
+        } else if (data0 == 0x67 and data1 == 0xe3) { /* 0x67 jmp short, jcxz/jecxz are conditional */
+            type = COND_JUMP;
         } else if (data0 == 0xc2) { /* retn */
             type = RET;
         } else if (data0 == 0xca) { /* lretn */
