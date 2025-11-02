@@ -1,3 +1,32 @@
-/build/
+# CMake build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Original build artifacts
 /dist/
 /nbproject/
+
+# Compiled binaries
+le_disasm
+le_disasm.exe
+*.o
+*.obj
+*.d
+
+# IDE artifacts
+.cproject
+.project
+.settings/
+.vscode/*
+.idea/
+*.swp
+*.swo
+*~
+
+# OS artifacts
+.DS_Store
+Thumbs.db
