@@ -54,7 +54,7 @@ jobs:
             sudo apt-get install -y ca-certificates gpg wget
             test -f /usr/share/doc/kitware-archive-keyring/copyright ||
             wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-            echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
+            echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ noble main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
             sudo apt-get update -y
             test -f /usr/share/doc/kitware-archive-keyring/copyright ||
             sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
@@ -114,12 +114,12 @@ jobs:
             sudo apt-get install -y ca-certificates gpg wget
             test -f /usr/share/doc/kitware-archive-keyring/copyright ||
             wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-            echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
+            echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ noble main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
             sudo apt-get update -y
             test -f /usr/share/doc/kitware-archive-keyring/copyright ||
             sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
             sudo apt-get install kitware-archive-keyring
-            sudo apt-get install -y file build-essential cmake gcc-multilib g++-multilib ninja-build:i386 wget binutils-dev:i386
+            sudo apt-get install -y file build-essential cmake gcc-multilib g++-multilib ninja-build wget binutils-dev:i386
 
       -  name: Checkout
          uses: actions/checkout@v4
@@ -168,7 +168,7 @@ jobs:
 
       -  name: Setup Dependencies
          run: |
-            pacman -S --noconfirm git mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-binutils
+            pacman -S --noconfirm git mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-binutils make
 
       -  name: Checkout
          uses: actions/checkout@v4
@@ -217,7 +217,7 @@ jobs:
 
       -  name: Setup Dependencies
          run: |
-            pacman -S --noconfirm git mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-ninja mingw-w64-i686-binutils
+            pacman -S --noconfirm git mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-ninja mingw-w64-i686-binutils make
 
       -  name: Checkout
          uses: actions/checkout@v4
