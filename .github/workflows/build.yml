@@ -96,9 +96,9 @@ jobs:
          uses: msys2/setup-msys2@v2
          with:
             msystem: MINGW64
-            update: false
+            update: true
             release: true
-            cache: true
+            cache: false
 
       -  name: Set build configuration
          id: build_configuration
@@ -109,6 +109,10 @@ jobs:
       -  name: Setup Dependencies
          run: |
             pacman -S --noconfirm git mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-binutils mingw-w64-x86_64-zlib mingw-w64-x86_64-zstd mingw-w64-x86_64-gettext-runtime make
+            echo "=== Checking for binutils libraries ==="
+            ls -la /mingw64/lib/lib*.a | grep -E '(opcodes|bfd|iberty|sframe)' || echo "Static libraries not found in /mingw64/lib"
+            echo "=== Files in binutils package ==="
+            pacman -Ql mingw-w64-x86_64-binutils | grep '\.a$'
 
       -  name: Checkout
          uses: actions/checkout@v4
