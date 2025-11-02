@@ -20,7 +20,12 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(PREFIX c:/msys64/mingw64)
+# Detect MINGW prefix from environment or use default
+if(DEFINED ENV{MINGW_PREFIX})
+    set(PREFIX $ENV{MINGW_PREFIX})
+else()
+    set(PREFIX c:/msys64/mingw64)
+endif()
 set(TOOLSET "x86_64-w64-mingw32")
 
 set(CMAKE_FIND_ROOT_PATH ${PREFIX})

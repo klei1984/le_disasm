@@ -117,7 +117,7 @@ jobs:
          run: |-
             mkdir ${{steps.build_configuration.outputs.build_type}}
             cd ${{steps.build_configuration.outputs.build_type}}
-            cmake -G "MSYS Makefiles" -DCMAKE_PREFIX_PATH=/mingw64 -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-w64-x86_64.cmake -DCMAKE_BUILD_TYPE=${{steps.build_configuration.outputs.build_type}} ..
+            cmake -G "MSYS Makefiles" -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-w64-x86_64.cmake -DCMAKE_BUILD_TYPE=${{steps.build_configuration.outputs.build_type}} ..
             cmake --build . --parallel
 
       -  name: Package
