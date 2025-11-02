@@ -96,9 +96,9 @@ jobs:
          uses: msys2/setup-msys2@v2
          with:
             msystem: MINGW64
-            update: true
+            update: false
             release: true
-            cache: false
+            cache: true
 
       -  name: Set build configuration
          id: build_configuration

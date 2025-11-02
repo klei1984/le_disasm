@@ -30,39 +30,27 @@ libopcodes-based (AT&T syntax) linear executable (MZ/LE/LX DOS EXEs) disassemble
 
 5. **Install required packages**:
    ```bash
-   pacman -S mingw-w64-x86_64-gcc \
+   pacman -S mingw-w64-x86_64-toolchain \
              mingw-w64-x86_64-cmake \
              mingw-w64-x86_64-ninja \
              mingw-w64-x86_64-binutils \
-             mingw-w64-x86_64-gettext
-   ```
-
-### Windows (MSYS2 MINGW32 - 32-bit)
-
-1. **Open MSYS2 MINGW32 shell**:
-   - From Start Menu: "MSYS2 MINGW32"
-   - Or run: `C:\msys64\msys2_shell.cmd -mingw32`
-
-2. **Install required packages**:
-   ```bash
-   pacman -S mingw-w64-i686-gcc \
-             mingw-w64-i686-cmake \
-             mingw-w64-i686-ninja \
-             mingw-w64-i686-binutils \
-             mingw-w64-i686-gettext
+             mingw-w64-x86_64-zlib \
+             mingw-w64-x86_64-zstd \
+             mingw-w64-x86_64-gettext-runtime \
+             make
    ```
 
 ### Ubuntu / Debian
 
 ```bash
 sudo apt-get update
-sudo apt-get install build-essential cmake binutils-dev
+sudo apt-get install build-essential cmake ninja-build binutils-dev file
 ```
 
 ### Arch Linux
 
 ```bash
-sudo pacman -S base-devel cmake binutils
+sudo pacman -S base-devel cmake ninja binutils
 ```
 
 ## Building
