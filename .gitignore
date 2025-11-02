@@ -1,14 +1,9 @@
 # CMake build artifacts
 build/
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-*.cmake
-
-# Original build artifacts
-/dist/
-/nbproject/
+Debug/
+Release/
+RelWithDebInfo/
+MinSizeRel/
 
 # Compiled binaries
 le_disasm
@@ -26,7 +21,3 @@ le_disasm.exe
 *.swp
 *.swo
 *~
-
-# OS artifacts
-.DS_Store
-Thumbs.db
